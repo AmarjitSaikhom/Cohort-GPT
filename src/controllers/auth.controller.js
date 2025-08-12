@@ -38,10 +38,39 @@ async function postRegisterController(req, res) {
 }
 
 async function getLoginController(req, res) {
-  res.render("")
+  res.render("login");
+}
+
+async function postLoginController(req, res) {
+  const { identifier, password } = req.body;
+
+  const user = await userModel.findOne({
+    $or: [{ username: identifier }, { email: identifier }],
+  });
+
+  if (!user) {
+    return res.redirect("/login?error=User not found");
+  }
+
+  const isPasswordValid = await bcrypt.compare(password, user.password);
+
+  if (!isPasswordValid) {
+    return res.redirect("/login?error=Invalid password");
+  }
+
+  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
+
+  res.cookie("token", token);
+
+  return res.status(200).json({
+    message: "User login successfully",
+    user: user,
+  });
 }
 
 module.exports = {
   getRegisterController,
   postRegisterController,
+  getLoginController,
+  postLoginController,
 };
