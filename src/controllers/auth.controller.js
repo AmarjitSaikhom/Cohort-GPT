@@ -31,10 +31,7 @@ async function postRegisterController(req, res) {
 
   res.cookie("token", token);
 
-  return res.status(201).json({
-    message: "user register successfully",
-    user: user,
-  });
+  return res.redirect("/");
 }
 
 async function getLoginController(req, res) {
@@ -62,10 +59,13 @@ async function postLoginController(req, res) {
 
   res.cookie("token", token);
 
-  return res.status(200).json({
-    message: "User login successfully",
-    user: user,
-  });
+  return res.redirect("/");
+}
+
+async function userLogout(req, res) {
+  res.clearCookie('token');
+
+  return res.redirect("/auth/login");
 }
 
 module.exports = {
@@ -73,4 +73,5 @@ module.exports = {
   postRegisterController,
   getLoginController,
   postLoginController,
+  userLogout
 };
