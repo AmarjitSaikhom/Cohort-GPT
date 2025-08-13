@@ -86,14 +86,10 @@
     autoresize();
     scrollToBottom();
 
-    // Show typing indicator
-    const typing = createTyping();
-    list.appendChild(typing);
     scrollToBottom();
 
     try {
-      // Simulate/perform request
-      const reply = await fakeReply(text);
+      socket.emit("ai-message", text);
 
       // Replace typing with assistant message
       typing.replaceWith(createMessage({ role: "assistant", content: reply }));
@@ -108,5 +104,14 @@
       list.appendChild(errorMsg);
       scrollToBottom();
     }
+  });
+
+  socket.on("ai-message-response", (message) => {
+    const messageItem = createMessage({
+      role: "assistant",
+      content: message,
+    });
+
+    list.appendChild(messageItem);
   });
 })();
